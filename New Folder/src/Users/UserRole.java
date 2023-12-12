@@ -1,0 +1,5 @@
+package Users;
+public enum UserRole {
+	STUDENT, TEACHER, ADMIN, DEAN, MANAGER, GRADUATE_STUDENT, TECH_SUPPORTER
+}
+
