@@ -89,6 +89,12 @@ public class Course {
 				&& Objects.equals(courseCode, other.courseCode) && credits == other.credits
 				&& Objects.equals(lessons, other.lessons) && Objects.equals(major, other.major);
 	}
+
+	@Override
+	public String toString() {
+		return "Course [courseCode=" + courseCode + ", courseName=" + courseName + ", credits=" + credits + ", major="
+				+ major + ", courseType=" + courseType + ", lessons=" + lessons + "]";
+	}
 	
 }
 
