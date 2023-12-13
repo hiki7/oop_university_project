@@ -60,7 +60,6 @@ public class Teacher extends Employee {
 		return Objects.equals(complaints, other.complaints) && Objects.equals(taughtCourses, other.taughtCourses)
 				&& Objects.equals(teacherRates, other.teacherRates) && title == other.title;
 	}
-	
 	@Override
 	public String toString() {
 		return super.toString() + "Teacher [title=" + title + ", taughtCourses=" + taughtCourses + ", complaints=" + complaints
