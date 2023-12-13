@@ -22,16 +22,16 @@ public class ResearchNews extends NewsDecorator {
     public String getTopCitedResearcher() {
         List<Researcher> researchers = Data.getInstance().getResearchers();
 
-           // Sort the list of researchers based on h-index
-           Collections.sort(researchers, Comparator.comparingInt(value -> {
-			try {
-				return ((Researcher) value).calculateHindex();
-			} catch (NotResearcherException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return 0;
-		}).reversed());
+        // Sort the list of researchers based on h-index
+        Collections.sort(researchers, Comparator.comparingInt(value -> {
+        	try {
+        		return ((Researcher) value).calculateHindex();
+        	} catch (NotResearcherException e) {
+        		// TODO Auto-generated catch block
+        		e.printStackTrace();
+        	}
+        	return 0;
+        }).reversed());
            // Get the top-cited researcher
            if (!researchers.isEmpty()) {
                Researcher topCitedResearcher = researchers.get(0);
