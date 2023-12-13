@@ -5,9 +5,9 @@ import java.util.Objects;
 import LessonObjects.*;
 public class GraduateStudent extends Student {
     private DiplomaProject diploma;
-	public GraduateStudent(int totalFailures, int totalCredits, Transcript transcript, Users.Faculty faculty,
+	public GraduateStudent(int totalFailures, int totalCredits, Users.Faculty faculty,
 			HashMap<Course, Attestation> courseAttestation, int yearOfStudy, DiplomaProject diploma) {
-		super(totalFailures, totalCredits, transcript, faculty, courseAttestation, yearOfStudy);
+		super(totalFailures, totalCredits, faculty, courseAttestation, yearOfStudy);
 		this.diploma = diploma;
 	}
 	

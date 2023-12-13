@@ -6,16 +6,16 @@ import LessonObjects.*;
 public class Student extends User{
     private int totalFailures;
     private int totalCredits;
-    private Faculty Faculty;
+    private Faculty faculty;
     private HashMap<Course, Attestation> courseAttestation;
     private int yearOfStudy;
     
-    public Student(int totalFailures, int totalCredits, Transcript transcript, Users.Faculty faculty,
+    public Student(int totalFailures, int totalCredits, Users.Faculty faculty,
 			HashMap<Course, Attestation> courseAttestation, int yearOfStudy) {
 		super();
 		this.totalFailures = totalFailures;
 		this.totalCredits = totalCredits;
-		Faculty = faculty;
+		this.faculty = faculty;
 		this.courseAttestation = courseAttestation;
 		this.yearOfStudy = yearOfStudy;
 	}
@@ -36,11 +36,11 @@ public class Student extends User{
 		this.totalCredits = totalCredits;
 	}
 	public Faculty getFaculty() {
-		return Faculty;
+		return this.faculty;
 	}
 
 	public void setFaculty(Faculty faculty) {
-		Faculty = faculty;
+		this.faculty = faculty;
 	}
 
 	public HashMap<Course, Attestation> getCourseAttestation() {
@@ -61,7 +61,7 @@ public class Student extends User{
 	@Override
 	public String toString() {
 		return super.toString() + "Student [totalFailures=" + totalFailures + ", totalCredits=" + totalCredits + ", transcript="
-				 + ", Faculty=" + Faculty + ", courseAttestation=" + courseAttestation + ", yearOfStudy="
+				 + ", Faculty=" + faculty + ", courseAttestation=" + courseAttestation + ", yearOfStudy="
 				+ yearOfStudy + "]";
 	}
 	
@@ -71,7 +71,7 @@ public class Student extends User{
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result
-				+ Objects.hash(Faculty, courseAttestation, totalCredits, totalFailures, yearOfStudy);
+				+ Objects.hash(faculty, courseAttestation, totalCredits, totalFailures, yearOfStudy);
 		return result;
 	}
 
@@ -84,7 +84,7 @@ public class Student extends User{
 		if (getClass() != obj.getClass())
 			return false;
 		Student other = (Student) obj;
-		return Faculty == other.Faculty && Objects.equals(courseAttestation, other.courseAttestation)
+		return faculty == other.faculty && Objects.equals(courseAttestation, other.courseAttestation)
 				&& totalCredits == other.totalCredits && totalFailures == other.totalFailures
 				 && yearOfStudy == other.yearOfStudy;
 	}
