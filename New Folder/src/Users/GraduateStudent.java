@@ -1,16 +1,23 @@
 package Users;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Objects;
-
 import LessonObjects.*;
-public class GraduateStudent extends Student {
-    private DiplomaProject diploma;
-	public GraduateStudent(int totalFailures, int totalCredits, Users.Faculty faculty,
-			HashMap<Course, Attestation> courseAttestation, int yearOfStudy, DiplomaProject diploma) {
-		super(totalFailures, totalCredits, faculty, courseAttestation, yearOfStudy);
+public class GraduateStudent extends Student implements Serializable{
+	private static final long serialVersionUID = -348607983230567150L;
+	private DiplomaProject diploma;
+    
+
+	public GraduateStudent(String username, String password, UserRole role, String name, String surname, Gender gender,
+			int id, boolean isResearcher, boolean isSupervisor, 
+			int totalFailures, int totalCredits, Users.Faculty faculty, HashMap<Course, Attestation> courseAttestation,
+			int yearOfStudy,Major major, DiplomaProject diploma) {
+		super(username, password, role, name, surname, gender, id, isResearcher, isSupervisor, 
+				totalFailures, totalCredits, faculty, courseAttestation, yearOfStudy, major);
 		this.diploma = diploma;
+		// TODO Auto-generated constructor stub
 	}
-	
+
 	public DiplomaProject getDiploma() {
 		return diploma;
 	}

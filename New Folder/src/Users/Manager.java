@@ -1,26 +1,25 @@
 package Users;
+import java.io.Serializable;
 import java.util.*;
 import Information.*;
 import Information.Exceptions.CreditsException;
 import LessonObjects.*;
-import ResearchObjects.Citation;
-public class Manager extends Employee {
-    private ManagerType managerType;
+import ResearchObjects.Journal;
+public class Manager extends Employee implements Serializable {
+	private static final long serialVersionUID = 6471450029935367508L;
+	private Faculty managerType;
     private LinkedHashMap<User, Course> requests;
-    public Manager() {
-		super();
-	}
 	public Manager(String username, String password, UserRole role, String name, String surname, Gender gender,
-			String id, boolean isResearcher, boolean isSupervisor, List<Citation> citationsOfResearcher, int salary, ManagerType managerType, LinkedHashMap<User, Course> requests) {
-		super(username, password, role, name, surname, gender, id, isResearcher, isSupervisor, citationsOfResearcher, salary);
+			int id, boolean isResearcher, boolean isSupervisor,  int salary, Faculty managerType) {
+		super(username, password, role, name, surname, gender, id, isResearcher, isSupervisor, salary);
 		this.managerType = managerType;
-		this.requests = requests;
+		this.requests = new LinkedHashMap<User,Course>();
 	}
 	
-	public ManagerType getManagerType() {
+	public Faculty getManagerType() {
 		return managerType;
 	}
-	public void setManagerType(ManagerType managerType) {
+	public void setManagerType(Faculty managerType) {
 		this.managerType = managerType;
 	}
 	public LinkedHashMap<User, Course> viewRequests() {
@@ -52,45 +51,80 @@ public class Manager extends Employee {
 	public String toString() {
 		return super.toString() + "Manager [managerType=" + managerType + ", requests=" + requests + "]";
 	}
-	public void addCourseForRegistration(Course course) {
-		Data.getInstance().getCourses().add(course);
+	public String addCourseForRegistration(String courseCode, String courseName, int credits) {
+		Data.getInstance().getCourses().add(new Course(courseCode, courseName,  credits, new ArrayList<Lesson>(), new HashMap<Major, CourseType>()));
+		return "Course added succesfully";
     }
-    public void assignCourseToTeachers() {
+    public String assignCourseToTeachers() {
         for (Map.Entry<User, Course> entry : requests.entrySet()) {
             User user = entry.getKey();
             Course course = entry.getValue();
             if(user instanceof Teacher) {
-            	((Teacher) user).getTaughtCourses().add(course);
+            	((Teacher) user).viewCourses().add(course);
             }
         }
+        return "Succesfully assigned";
     }
     public String createStatisticalReport() {
-    	return "In this university we have" + Data.getInstance().getStudents().size() + " students, " + Data.getInstance().getTeachers().size() + " teachers, " +  Data.getInstance().getCourses().size();
+    	return "In this university we have" + Data.getInstance().getStudents().size() + " students, " + Data.getInstance().getTeachers().size() + " teachers, " +  Data.getInstance().getCourses().size()
+    			+ " courses";
     }
-    public List<User> viewInfoAbout(List<User> users, Comparator<User> comparator) {
-    	Collections.sort(users, comparator);
-    	return users;
+    public List<Student> viewInfoAboutStudents( String comp) {
+    	List<Student> s = Data.getInstance().getStudents();
+    	if(comp.equals("ID")) {
+    		Collections.sort(s, new IdComparator());
+    	}else if(comp.equals("Name")) {
+    		Collections.sort(s, new NameComparator());
+    	}else if(comp.equals("Surname")) {
+    		Collections.sort(s, new SurnameComparator());
+    	}
+    	return s;
     }
-    public void assignCourseToStudents() throws CreditsException {
+    public List<Teacher> viewInfoAboutTeachers( String comp) {
+    	List<Teacher> s = Data.getInstance().getTeachers();
+    	if(comp.equals("ID")) {
+    		Collections.sort(s, new IdComparator());
+    	}else if(comp.equals("Name")) {
+    		Collections.sort(s, new NameComparator());
+    	}else if(comp.equals("Surname")) {
+    		Collections.sort(s, new SurnameComparator());
+    	}
+    	return s;
+    }
+    public String assignCourseToStudents() throws CreditsException {
         for (Map.Entry<User, Course> entry : requests.entrySet()) {
             User user = entry.getKey();
             Course course = entry.getValue();
             if(user instanceof Student) {
-            	if(((Student) user).getTotalCredits() + course.getCredits() > 21) {
+            	Student s = (Student) user;
+            	if(s.getTotalCredits() + course.getCredits() > 21) {
             		throw new CreditsException("This Student has more than 21 credits");
             	}else {
-            		((Student) user).getCourseAttestation().put(course, new Attestation());
+            		s.getCourseAttestation().put(course, new Attestation(0,0,0));
+            		s.setTotalCredits(s.getTotalCredits() + course.getCredits());
             	}
             }
         }
+        return "Succesfully assigned";
     }
-    public void addNews(News news) {
-    	Data.getInstance().getNews().add(news);
+    public String addNews(String topic, String content) {
+    	News n = new SimpleNews(topic, content);
+    	if(topic.contains("Research")) {
+    		n = new ResearchNews(n);
+    	}
+    	Data.getInstance().getNews().add(n);
+    	return "News added succesfully";
     }
-    public void deleteNews(News news) {
-    	Data.getInstance().getNews().remove(news);
+    public String deleteNews(String topic) {
+    	for(News n: Data.getInstance().getNews()) {
+    		if(n.getTopic().equals(topic)) {
+    			Data.getInstance().getNews().remove(n);
+    			return "This news removed succesfully";
+    		}
+    	}
+    	return "Wrong topic";
     }
-    public void putRateOfTeachers() {
+    public String putRateOfTeachers() {
     	for(Teacher teacher: Data.getInstance().getTeachers()) {
     		int sum = 0, rating = 0;
     		for(int rate: teacher.getTeacherRates()) {
@@ -99,6 +133,40 @@ public class Manager extends Employee {
     		rating = sum / teacher.getTeacherRates().size();
     		Data.getInstance().getRatingOfTeachers().put(rating, teacher);
     	}
+    	return "All rates are updated succefully";
     }
+    public String addLessonToCourse(String courseName, LessonType type, LessonFormat format, Date date, WeekDay day, 
+    		 String lessonCode) {
+    	Course course = null;
+    	boolean m = false;
+    	for(Course c : Data.getInstance().getCourses()) {
+    		if(c.getCourseName().equals(courseName)) {
+    			course = c;
+    			m = true;
+    			break;
+    		}
+    	}
+    	if(m == false) {
+    		return "Incorrect courseName";
+    	}
+    	course.getLessons().add(new Lesson(type, format, date, day, lessonCode));
+    	return "Lesson added succesfully";
+    }
+    public void createJournal(String journalName) {
+           Journal journal = new Journal(journalName, new ArrayList<>(), new ArrayList<>());
+           Data.getInstance().getJournals().add(journal);
+    }
+    public void deleteJournal(String journalName) {
+    	Journal journalToRemove = null;
+    	List<Journal> journals = Data.getInstance().getJournals();
+        for (Journal existingJournal : journals) {
+            if (existingJournal.getName().equals(journalName)) {
+                journalToRemove = existingJournal;
+                break;
+            }
+        }
+        journals.remove(journalToRemove);
+    }
+    
 }
 

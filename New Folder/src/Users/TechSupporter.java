@@ -1,18 +1,14 @@
 package Users;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import Information.*;
-import ResearchObjects.Citation;
-public class TechSupporter extends Employee {
-	
-    public TechSupporter() {
-		super();
-	}
+public class TechSupporter extends Employee implements Serializable{
+	private static final long serialVersionUID = -233760161044445865L;
 	public TechSupporter(String username, String password, UserRole role, String name, String surname, Gender gender,
-			String id, boolean isResearcher, boolean isSupervisor, List<Citation> citationsOfResearcher, int salary) {
-		super(username, password, role, name, surname, gender, id, isResearcher, isSupervisor, citationsOfResearcher, salary);
+			int id, boolean isResearcher, boolean isSupervisor,  int salary) {
+		super(username, password, role, name, surname, gender, id, isResearcher, isSupervisor,  salary);
 	}
 	public List<Order> seeOrders() {
 		List<Order> lo = new ArrayList<Order>();
@@ -23,11 +19,24 @@ public class TechSupporter extends Employee {
 		}
 		return lo;
     }
-    public void acceptOrder(Order order) {
-    	order.setStatus(OrderStatus.ACCEPTED);
+    public String acceptOrder(int id) {
+    	for(Order o: Data.getInstance().getOrders()) {
+    		if(o.getOrderId() == id) {
+    			o.setStatus(OrderStatus.ACCEPTED);
+    			return "Order accepted";
+    		}
+    	}
+    	return "Wrong id of order";
+    	
     }
-    public void rejectOrder(Order order) {
-    	order.setStatus(OrderStatus.REJECTED);
+    public String rejectOrder(int id) {
+    	for(Order o: Data.getInstance().getOrders()) {
+    		if(o.getOrderId() == id) {
+    			o.setStatus(OrderStatus.REJECTED);
+    			return "Order rejected";
+    		}
+    	}
+    	return "Wrong id of order";
     }
 }
 

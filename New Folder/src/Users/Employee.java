@@ -1,15 +1,16 @@
 package Users;
+import java.io.Serializable;
 import java.util.*;
 import Information.*;
-import ResearchObjects.Citation;
-public abstract class Employee extends User {
-    private int salary;    
+public abstract class Employee extends User implements Serializable {
+	private static final long serialVersionUID = -5515987365717826466L;
+	private int salary;    
 	public Employee() {
 		super();
 	}
 	public Employee(String username, String password, UserRole role, String name, String surname, Gender gender,
-			String id, boolean isResearcher, boolean isSupervisor, List<Citation> citationsOfResearcher, int salary) {
-		super(username, password, role, name, surname, gender, id, isResearcher, isSupervisor, citationsOfResearcher);
+			int id, boolean isResearcher, boolean isSupervisor, int salary) {
+		super(username, password, role, name, surname, gender, id, isResearcher, isSupervisor);
 		this.salary = salary;
 	}
 	
@@ -41,8 +42,21 @@ public abstract class Employee extends User {
 	public void setSalary(int salary) {
 		this.salary = salary;
 	}
-	public void sendMessage(Message message) {
-		Data.getInstance().getWorkMessages().add(message);
+	public String sendMessage(String nameR, String surnameR, String role, String content) {
+		User user = null;
+		boolean m = false;
+		for(User u: Data.getInstance().getUsers()) {
+			if(u.getName().equals(nameR) && u.getSurname().equals(surnameR) && u.getRole() == UserRole.valueOf(role) ) {
+				user = u;
+				m = true;
+				break;
+			}
+		}
+		if(m == false) {
+			return "Wrong credentials";
+		}
+		Data.getInstance().getWorkMessages().add(new Message(this, (Employee)user, content));
+		return "Message sended succesfully";
     }
     public List<Message> viewMessage() {
     	List<Message> m = new ArrayList<Message>();
@@ -62,8 +76,9 @@ public abstract class Employee extends User {
     	}
     	return m;
     }
-	public void sendOrder(Order order) {
-		Data.getInstance().getOrders().add(order);
+	public String sendOrder(String description) {
+		Data.getInstance().getOrders().add(new Order(description, Data.getInstance().getOrders().size() + 1));
+		return "Order sended succesfully";
     }
 }
 

@@ -1,27 +1,28 @@
 package Users;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import Information.Data;
+import Information.News;
 import Information.Exceptions.NotResearcherException;
 import ResearchObjects.*;
-public class User implements Subscriber, Supervisor {
-    private String username;
+public class User implements Subscriber, Supervisor, Serializable {
+	private static final long serialVersionUID = 5794641265652937705L;
+	private String username;
     private String password;
     private UserRole role;
     private String name;
     private String surname;
     private Gender gender;
-    private String id;
+    private int id;
     private boolean isResearcher;
     private boolean isSupervisor;
-    private List<Citation> citationsOfResearcher;
     public User() {};
-    public User(String username, String password, UserRole role, String name, String surname, Gender gender, String id,
-			boolean isResearcher, boolean isSupervisor, List<Citation> citationsOfResearcher) {
-		super();
+    public User(String username, String password, UserRole role, String name, String surname, Gender gender, int id,
+			boolean isResearcher, boolean isSupervisor) {
 		this.username = username;
 		this.password = password;
 		this.role = role;
@@ -31,20 +32,10 @@ public class User implements Subscriber, Supervisor {
 		this.id = id;
 		this.isResearcher = isResearcher;
 		this.isSupervisor = isSupervisor;
-		this.citationsOfResearcher = citationsOfResearcher;
 	}
 
 	public String getPassword() {
 		return password;
-	}
-	public List<Citation> getCitationsOfResearcher() {
-		return citationsOfResearcher;
-	}
-	public void setCitationsOfResearcher(List<Citation> citationsOfResearcher) {
-		this.citationsOfResearcher = citationsOfResearcher;
-	}
-	public boolean isResearcher() {
-		return isResearcher;
 	}
 	public void setPassword(String password) {
 		this.password = password;
@@ -73,14 +64,22 @@ public class User implements Subscriber, Supervisor {
 	public void setGender(Gender gender) {
 		this.gender = gender;
 	}
-	public String getId() {
+	
+	public int getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 	public void setResearcher(boolean isResearcher) {
 		this.isResearcher = isResearcher;
+		if(isResearcher == true) {
+			Data.getInstance().getResearchers().add(this);
+		}else
+		{
+			Data.getInstance().getResearchers().remove(this);
+		}
+		
 	}
 	public boolean isSupervisor() {
 		return isSupervisor;
@@ -96,7 +95,8 @@ public class User implements Subscriber, Supervisor {
 	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(gender, id, isResearcher, isSupervisor, name, password, role, surname, username);
+		return Objects.hash( gender, id, isResearcher, isSupervisor, name, password, role,
+				surname, username);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -107,19 +107,19 @@ public class User implements Subscriber, Supervisor {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		return gender == other.gender && Objects.equals(id, other.id) && isResearcher == other.isResearcher
-				&& isSupervisor == other.isSupervisor && Objects.equals(name, other.name)
-				&& Objects.equals(password, other.password) && role == other.role
+		return   gender == other.gender
+				&& id == other.id && isResearcher == other.isResearcher && isSupervisor == other.isSupervisor
+				&& Objects.equals(name, other.name) && Objects.equals(password, other.password) && role == other.role
 				&& Objects.equals(surname, other.surname) && Objects.equals(username, other.username);
 	}
-	public boolean authenticate(String username, String password) {
+	public static User authenticate(String username, String password) {
 		List<User> users = Data.getInstance().getUsers();
 		for (User user: users) {
 			if(user.getUsername().equals(username) && user.getPassword().equals(password)) {
-				return true;
+				return user;
 			}
 		}
-        return false;
+        return null;
     }
 	
     @Override
@@ -134,8 +134,14 @@ public class User implements Subscriber, Supervisor {
 	@Override
 	public int calculateHindex() throws NotResearcherException {
 		if(isResearcher) {
-			int hindex = this.citationsOfResearcher.size();
-			for(Citation citation: this.citationsOfResearcher) {
+			List<Citation> l = new ArrayList<Citation>();
+			for(Citation c: Data.getInstance().getCitations()) {
+				if(c.getAuthor().equals(this)) {
+					l.add(c);
+				}
+			}
+			int hindex = l.size();
+			for(Citation citation: l) {
 				int cur = citation.getUsed();
 				if(cur < hindex) {
 					hindex = cur;
@@ -169,12 +175,15 @@ public class User implements Subscriber, Supervisor {
 	public List<ResearchPaper> printPapers(Comparator<ResearchPaper> comparator) throws NotResearcherException {
 		if(isResearcher) {
 			List<ResearchPaper> rp = getAllPapers();
-			Collections.sort(rp, comparator);
+			Collections.sort(rp, Collections.reverseOrder(comparator));
 			return rp;
 		}
 		else {
 			throw new NotResearcherException("This user is not a researcher");
 		}
+	}
+	public List<News> viewNews(){
+		return Data.getInstance().getNews();
 	}
 
 }

@@ -3,22 +3,42 @@ package Information;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import Users.*;
 
 import Information.Exceptions.NotResearcherException;
 import ResearchObjects.Researcher;
-
+/**
+ * This is the ResearchNews class
+ */
 public class ResearchNews extends NewsDecorator {
-    public ResearchNews(News n) {
+	private static final long serialVersionUID = -2010377786503374989L;
+	/**
+	 * Constructor of the ResearchNews class, which accepts news n
+	 * @param n
+	 */
+	public ResearchNews(News n) {
     	super(n);
     }
+	/**
+	 * This method returns topic
+	 * @return super.getTopic()
+	 */
 	public String getTopic() {
         return super.getTopic();
     }
-
+	/**
+	 * This method returns content
+	 * @return super.getContent() + getTopCitedResearcher()
+	 */
     public String getContent() {
         return super.getContent() + getTopCitedResearcher();
     }
-
+    /**
+     * This method returns top cited researcher
+     * @return "Top Cited Researcher: " + ((User)topCitedResearcher).getName()(if has the top cited researcher)
+     * @return "No researchers available."(if does not have  top cited researcher)
+     * 
+     */
     public String getTopCitedResearcher() {
         List<Researcher> researchers = Data.getInstance().getResearchers();
 
@@ -35,18 +55,18 @@ public class ResearchNews extends NewsDecorator {
            // Get the top-cited researcher
            if (!researchers.isEmpty()) {
                Researcher topCitedResearcher = researchers.get(0);
-               return "Top Cited Researcher: " + topCitedResearcher.toString();
+               return "Top Cited Researcher: " + ((User)topCitedResearcher).getName();
            } else {
                return "No researchers available.";
            }
     }
-    public void addNews(News news) {
-    	Data.getInstance().getNews().add(news);
-    }
+    /**
+     * Overriding method toString to ResearchNews class 
+     */
     @Override
 	public String toString() {
 		return "ResearchNews [topic=" + getTopic() + ", content=" + getContent() + "]";
 	}
-    
 }
+
 
