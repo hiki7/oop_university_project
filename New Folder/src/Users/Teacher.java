@@ -153,30 +153,41 @@ public class Teacher extends Employee implements Serializable {
 	}
 	public String putAtt(int stId, String courseName,int which, double finalGrade) {
 		Student s = null;
-		boolean m = false;
-		for(Student student: Data.getInstance().getStudents()) {
-			if(student.getId() == stId) {
-				s = student;
-				m = true;
-				break;
-			}
-		}
-		if(m == false) {
-			return "Incorrect ID";
-		}
-		m = false;
-    	Course course = null;
-    	for(Course c : Data.getInstance().getCourses()) {
-    		if(c.getCourseName().equals(courseName)) {
-    			course = c;
-    			m = true;
-    			break;
-    		}
-    	}
-		if(m == false) {
-			return "Incorrect course name";
-		}
-		double grade = 0;
+	    boolean studentFound = false;
+	    for (Student student : Data.getInstance().getStudents()) {
+	        if (student.getId() == stId) {
+	            s = student;
+	            studentFound = true;
+	            break;
+	        }
+	    }
+	    if (!studentFound) {
+	        return "Incorrect ID";
+	    }
+
+	    Course course = null;
+	    boolean courseFound = false;
+	    for (Course c : Data.getInstance().getCourses()) {
+	        if (c.getCourseName().equals(courseName)) {
+	            course = c;
+	            courseFound = true;
+	            break;
+	        }
+	    }
+	    if (!courseFound) {
+	        return "Incorrect course name";
+	    }
+
+	    // Ensure that the Attestation object exists for the student and course
+	    if (s.getCourseAttestation().get(course) == null) {
+	        // Create a new Attestation object and associate it with the student and course
+	        Attestation newAttestation = new Attestation();
+	        s.getCourseAttestation().put(course, newAttestation);
+	    }
+
+	    // Now, you can safely set the values for the Attestation object
+	    Attestation attestation = s.getCourseAttestation().get(course);
+	    double grade = 0;
 		if(which == 1) {
 			for(int i = 0; i < course.getLessons().size(); i++) {
 				if(i == course.getCredits() * 15) {

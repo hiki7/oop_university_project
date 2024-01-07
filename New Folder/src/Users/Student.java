@@ -66,7 +66,7 @@ public class Student extends User implements Serializable{
 		Faculty = faculty;
 	}
 
-	public HashMap<Course, Attestation> getCourseAttestation() {
+	public Map<Course, Attestation> getCourseAttestation() {
 		return courseAttestation;
 	}
 

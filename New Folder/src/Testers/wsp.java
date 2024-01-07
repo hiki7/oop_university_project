@@ -1285,7 +1285,7 @@ public class wsp {
     		"Enter the urgency level from 1 to 3, then id of student, then content of complaint",
     		"Enter id of student",
     		"Enter id of student, then course name , then lesson code, then grade of this student in this lesson",
-    		"Enter id of student, then course name,\n then if first att enter 1 and 0 if second enter 2 and 0 if final enter 3  /n "
+    		"Enter id of student, then course name,\n then if first att enter 1 and 0 if second enter 2 and 0 if final enter 3"
     		+ "and grade for final",
     		"Enter course name, then lesson code, then format(ONLINE, OFFLINE) that you need to change",
     		"Enter course name that you want to teach",
